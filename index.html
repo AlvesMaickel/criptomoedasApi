@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>CoinMarketCap</title>
+</head>
+
+<body>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">Coin Market Cap</li>
+        </ol>
+    </nav>
+    <div class="container">
+
+        <div class="d-flex p-3 bd-highlight">
+            <div id='coins'></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var apikey = {
+            key: '4e6f9e31-8b16-4852-8600-959a5b4fbee6'
+        }
+
+        fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?CMC_PRO_API_KEY=' +
+                apikey.key)
+            .then((response) => {
+                if (!response.ok) throw new Error('Erro ao executar a requisição, status ' + response.status);
+                return response.json()
+            })
+            .then((api) => {
+                let date;
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var texto = `
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Symbol</th>
+                                <th>Rank</th>               
+                                <th>First Historical Data</th>                            
+                                <th>Last Historical Data</th>               
+                            </tr>
+                        </thead>
+                        <tbody>                            
+                `;
+                for (let i = 0; i < 20; i++) {
+                    first_date = new Date(api.data[i].first_historical_data);
+                    last_date = new Date(api.data[i].last_historical_data);
+                    texto = texto + ` 
+                        <tr>
+                            <td><img src='coin.jpg' class='align-self-center mr-3' alt='coin' width='50' height='30'></td>
+                            <td>${api.data[i].name}</td>
+                            <td>${api.data[i].symbol}</td>
+                            <td>${api.data[i].rank}</td>
+                            <td>${first_date.getDate()} ${months[first_date.getMonth()]} ${first_date.getFullYear()}</td>
+                            <td>${last_date.getDate()} ${months[last_date.getMonth()]} ${last_date.getFullYear()}</td>
+                        </tr>
+                    `;
+                    console.log(api.data[i]);
+
+                }
+
+                texto = texto + `
+                        </tbody>
+                    </table>`;
+                document.getElementById('coins').innerHTML = texto;
+            })
+            .catch((error) => {
+                console.error(error.message);
+            });
+    </script>
+
+</body>
+
+</html
